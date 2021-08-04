@@ -1,0 +1,54 @@
+//The average grade that is given by each proffesor
+SELECT p.id, AVG(g.grade)
+FROM professors p LEFT JOIN courses c
+ON p.id=c.id_professor
+JOIN grades g
+ON c.id=g.id_course
+GROUP BY p.id;
+
+//The top grades for each student
+SELECT name, last_name, MAX(grade) 
+FROM grades g JOIN students s
+ON g.id_student=s.id
+GROUP BY s.id;
+
+//Group students by the courses they are enroled in
+SELECT g.id_course, name, last_name 
+FROM grades g JOIN students s
+ON g.id_student=s.id;
+
+//Create a summary report of courses and their average grades, sort by the most challengin course(course
+with the lowest average grade) to the easiest course
+SELECT subject, AVG(grade)
+FROM courses c JOIN grades g
+ON c.id=g.id_course
+GROUP BY c.id
+ORDER BY AVG(grade) ASC; 
+
+//Finding which student and proffesor have the most courses in common
+SELECT CONCAT(p.name, " ", p.last_name) 'professor', CONCAT(s.name, " ", s.last_name) 'student', COUNT(g.id_student) 'subjects'
+FROM courses c JOIN grades g
+ON c.id=g.id_course
+JOIN professors p
+ON p.id=c.id_professor
+JOIN students s
+ON s.id=g.id_student
+GROUP BY c.id_professor, g.id_student
+HAVING COUNT(g.id_student)=(SELECT MAX(num_students)
+						  FROM (SELECT COUNT(g.id_student) AS 'num_students'
+                          FROM courses c JOIN grades g
+                          ON c.id=g.id_course
+                          GROUP BY c.id_professor, g.id_student) n);
+
+
+
+
+
+
+
+
+
+
+
+
+
